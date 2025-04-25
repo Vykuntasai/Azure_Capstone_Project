@@ -1,4 +1,4 @@
-#Azure Capstone Project 2025
+## Azure DevOps & Terraform Integration for Web App and VM Deployment
 ## Project Overview
 ```
 This project automates the deployment of a secure, monitored infrastructure on Microsoft Azure using **Terraform** and **Azure DevOps**, designed for the Central India region.
