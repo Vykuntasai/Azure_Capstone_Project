@@ -99,5 +99,16 @@ resource "azurerm_network_security_group" "pep_nsg" {
   location            = "Central India"
   resource_group_name = azurerm_resource_group.network_rg.name
 }
+resource "azurerm_private_dns_zone" "pdz" {
+  name                = "privatelink.azurewebsites.net"
+  resource_group_name = azurerm_resource_group.application_rg.name
+}
+resource "azurerm_virtual_network_link" "vnet_link" {
+  name                        = "vnet-link"
+  resource_group_name         = azurerm_resource_group.network_rg.name
+  private_dns_zone_id        = azurerm_private_dns_zone.pdz.id
+  virtual_network_id         = azurerm_virtual_network.vnet.id
+  registration_enabled       = true
+}
 ```
 
