@@ -27,6 +27,7 @@ terraform {
 }
 ```
 ## main.tf
+```
 resource "azurerm_resource_group" "network_rg" {
   name     = "rg-dev-network-01"
   location = "Central India"
@@ -98,4 +99,5 @@ resource "azurerm_network_security_group" "pep_nsg" {
   location            = "Central India"
   resource_group_name = azurerm_resource_group.network_rg.name
 }
+```
 
