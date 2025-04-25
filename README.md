@@ -30,4 +30,7 @@ terraform {
 ```
 Refer to main.tf file
 ```
-
+## Installation for Docker
+```
+Refer to docker_install.sh
+```
