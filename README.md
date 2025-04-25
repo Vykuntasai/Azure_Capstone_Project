@@ -11,7 +11,7 @@ It includes:
 ## Region
 All resources are deployed in the `Central India` region.
 ## providers.tf
-'''
+```
 provider "azurerm" {
   features {}
 }
@@ -25,7 +25,7 @@ terraform {
   }
   required_version = ">= 1.3.0"
 }
-'''
+```
 ## main.tf
 resource "azurerm_resource_group" "network_rg" {
   name     = "rg-dev-network-01"
