@@ -1,78 +1,91 @@
-resource "azurerm_resource_group" "network_rg" {
+# To create resource_group
+ 
+resource "azurerm_resource_group" "network" {
   name     = "rg-dev-network-01"
   location = "Central India"
 }
-
-resource "azurerm_resource_group" "app_rg" {
-  name     = "rg-dev-application-01"
-  location = "Central India"
-}
-
-// Create Virtual Network
+ 
+ 
+# To create virtual_network
+ 
 resource "azurerm_virtual_network" "vnet" {
   name                = "vnet-dev-01"
   address_space       = ["10.1.0.0/20"]
-  location            = azurerm_resource_group.network_rg.location
-  resource_group_name = azurerm_resource_group.network_rg.name
+  location            = azurerm_resource_group.network.location
+  resource_group_name = azurerm_resource_group.network.name
 }
-
-// Subnets
-resource "azurerm_subnet" "snet_web" {
-  name                 = "snet-dev-web1"
-  resource_group_name  = azurerm_resource_group.network_rg.name
+ 
+# To create snet-dev-web(Subnet for web)
+ 
+resource "azurerm_subnet" "web" {
+  name                 = "snet-dev-web-01"
+  resource_group_name  = azurerm_resource_group.network.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.1.0.0/22"]
 }
-
+# To create nsg-snet-dev-web(network_security_group for web)
+ 
 resource "azurerm_network_security_group" "web_nsg" {
-  name                = "web-nsg1"
-  location            = "Central India"
-  resource_group_name = azurerm_resource_group.network_rg.name
-
+  name                = "nsg-snet-dev-web-01"
+  location            = azurerm_resource_group.network.location
+  resource_group_name = azurerm_resource_group.network.name
 }
-
-resource "azurerm_subnet" "snet_app" {
-  name                 = "snet-dev-app1"
-  resource_group_name  = azurerm_resource_group.network_rg.name
+ 
+# To create snet-dev-app(Subnet for app)
+ 
+resource "azurerm_subnet" "app" {
+  name                 = "snet-dev-app-01"
+  resource_group_name  = azurerm_resource_group.network.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.1.4.0/22"]
 }
-
+ 
+# To create nsg-snet-dev-app(network_security_group for app)
+ 
 resource "azurerm_network_security_group" "app_nsg" {
-  name                = "app-nsg1"
-  location            = "Central India"
-  resource_group_name = azurerm_resource_group.network_rg.name
+  name                = "nsg-snet-dev-app-01"
+  location            = azurerm_resource_group.network.location
+  resource_group_name = azurerm_resource_group.network.name
 }
-
-resource "azurerm_subnet" "snet_data" {
-  name                 = "snet-dev-data1"
-  resource_group_name  = azurerm_resource_group.network_rg.name
+ 
+# To create snet-dev-data(Subnet for data)
+resource "azurerm_subnet" "data" {
+  name                 = "snet-dev-data-01"
+  resource_group_name  = azurerm_resource_group.network.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.1.8.0/22"]
 }
-
+# To create nsg-snet-dev-app(network_security_group for data)
 resource "azurerm_network_security_group" "data_nsg" {
-  name                = "data-nsg1"
-  location            = "Central India"
-  resource_group_name = azurerm_resource_group.network_rg.name
+  name                = "nsg-snet-dev-data-01"
+  location            = azurerm_resource_group.network.location
+  resource_group_name = azurerm_resource_group.network.name
 }
-
-resource "azurerm_subnet" "snet_pep" {
-  name                 = "snet-dev-pep1"
-  resource_group_name  = azurerm_resource_group.network_rg.name
+ 
+# To create snet-dev-pep(Subnet for pep)
+resource "azurerm_subnet" "pep" {
+  name                 = "snet-dev-pep-01"
+  resource_group_name  = azurerm_resource_group.network.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.1.12.0/22"]
-  
 }
-
+ 
+# To create nsg-snet-dev-pep(network_security_group for pep)
 resource "azurerm_network_security_group" "pep_nsg" {
-  name                = "pep-nsg1"
-  location            = "Central India"
-  resource_group_name = azurerm_resource_group.network_rg.name
+  name                = "nsg-snet-dev-pep-01"
+  location            = azurerm_resource_group.network.location
+  resource_group_name = azurerm_resource_group.network.name
 }
-
+ 
+ 
+# To create virtual machine in web subnet
+ 
+<!-- Every Azure Virtual Machine MUST be connected to a Network Interface Card (NIC).The NIC is the resource that actually attaches
+     the VM to a subnet inside a Virtual Network (VNet).The subnet itself is like a network "area," but NIC is what carries the IP address,
+     handles communication, security groups, etc. -->
+ 
 resource "azurerm_public_ip" "vm_ip" {
-  name                = "pip-dev-vm1"
+  name                = "pip-dev-vm-01"
   location            = azurerm_resource_group.network.location
   resource_group_name = azurerm_resource_group.network.name
   allocation_method   = "Dynamic"
@@ -80,7 +93,7 @@ resource "azurerm_public_ip" "vm_ip" {
 }
  
 resource "azurerm_network_interface" "dev_vm_nic" {
-  name                = "nic-dev-vm1"
+  name                = "nic-dev-vm-01"
   location            = azurerm_resource_group.network.location
   resource_group_name = azurerm_resource_group.network.name
  
@@ -93,7 +106,7 @@ resource "azurerm_network_interface" "dev_vm_nic" {
 }
  
 resource "azurerm_linux_virtual_machine" "dev_vm" {
-  name                            = "dev-vm-1"
+  name                            = "dev-vm-01"
   location                        = azurerm_resource_group.network.location
   resource_group_name             = azurerm_resource_group.network.name
   network_interface_ids           = [azurerm_network_interface.dev_vm_nic.id]
@@ -112,6 +125,9 @@ resource "azurerm_linux_virtual_machine" "dev_vm" {
     name                 = "dev-os-disk"
   }
  
+ 
+# After creating Virtual in Web subnet we are going to install the docker by using docker_install.sh file
+ 
   source_image_reference {
     publisher = "Canonical"
     offer     = "0001-com-ubuntu-server-jammy"
@@ -119,5 +135,5 @@ resource "azurerm_linux_virtual_machine" "dev_vm" {
     version   = "latest"
   }
  
-  custom_data = filebase64("docker-install.sh")
+  custom_data = filebase64("docker-install.sh")     # Create a docker_install.sh file in same folder(docker_install.sh is they in github files)
 }
