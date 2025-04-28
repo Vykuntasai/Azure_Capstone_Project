@@ -135,5 +135,5 @@ resource "azurerm_linux_virtual_machine" "dev_vm" {
     version   = "latest"
   }
  
-  custom_data = filebase64("docker-install.sh")     # Create a docker_install.sh file in same folder(docker_install.sh is they in github files)
+  custom_data = filebase64("docker_install.sh")     # Create a docker_install.sh file in same folder(docker_install.sh is they in github files)
 }
