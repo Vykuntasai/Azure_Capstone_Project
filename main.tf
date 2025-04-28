@@ -137,3 +137,75 @@ resource "azurerm_linux_virtual_machine" "dev_vm" {
  
   custom_data = filebase64("docker_install.sh")     # Create a docker_install.sh file in same folder(docker_install.sh is they in github files)
 }
+
+# 8. App Service Plan
+resource "azurerm_app_service_plan" "appserviceplan" {
+  name                = "appserviceplan-dev-01"
+  location            = azurerm_resource_group.network.location
+  resource_group_name = azurerm_resource_group.network.name
+
+  sku {
+    tier = "Basic"
+    size = "B1"
+  }
+
+  reserved = true  # Linux App Service
+}
+
+# 9. Web App
+resource "azurerm_linux_web_app" "webapp" {
+  name                = "webapp-dev-01"
+  location            = azurerm_resource_group.network.location
+  resource_group_name = azurerm_resource_group.network.name
+  service_plan_id     = azurerm_app_service_plan.appserviceplan.id
+
+  site_config {
+    always_on = true
+    linux_fx_version = "DOCKER|mcr.microsoft.com/azuredocs/aci-helloworld:latest"  # Sample Docker image
+  }
+
+  app_settings = {
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "WEBSITE_RUN_FROM_PACKAGE"            = "1"
+  }
+}
+
+# 10. Private Endpoint for Web App
+resource "azurerm_private_endpoint" "webapp_private_endpoint" {
+  name                = "pep-webapp-dev-01"
+  location            = azurerm_resource_group.network.location
+  resource_group_name = azurerm_resource_group.network.name
+  subnet_id           = azurerm_subnet.pep.id
+
+  private_service_connection {
+    name                           = "psc-webapp-dev-01"
+    private_connection_resource_id = azurerm_linux_web_app.webapp.id
+    subresource_names              = ["sites"]
+    is_manual_connection           = false
+  }
+}
+
+# 11. Private DNS Zone for Web App
+resource "azurerm_private_dns_zone" "webapp_dns" {
+  name                = "privatelink.azurewebsites.net"
+  resource_group_name = azurerm_resource_group.network.name
+}
+
+# 12. Virtual Network Link to Private DNS Zone
+resource "azurerm_private_dns_zone_virtual_network_link" "webapp_dns_link" {
+  name                  = "webappdnslink"
+  resource_group_name   = azurerm_resource_group.network.name
+  private_dns_zone_name = azurerm_private_dns_zone.webapp_dns.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+}
+
+# 13. A Record for Web App inside Private DNS
+resource "azurerm_private_dns_a_record" "webapp_dns_a" {
+  name                = azurerm_linux_web_app.webapp.name
+  zone_name           = azurerm_private_dns_zone.webapp_dns.name
+  resource_group_name = azurerm_resource_group.network.name
+  ttl                 = 300
+  records             = [azurerm_private_endpoint.webapp_private_endpoint.private_service_connection[0].private_ip_address]
+}
+
+
