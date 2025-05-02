@@ -12,19 +12,7 @@ It includes:
 All resources are deployed in the `Central India` region.
 ## providers.tf
 ```
-provider "azurerm" {
-  features {}
-}
-
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">= 3.0"
-    }
-  }
-  required_version = ">= 1.3.0"
-}
+Refer to provider.tf file
 ```
 ## main.tf
 ```
