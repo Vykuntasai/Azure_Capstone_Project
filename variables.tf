@@ -1,5 +1,5 @@
 # Variables
 variable "prefix" {
-  default = "Sai"
+  default = "VykuntaSai"
   type    = string
 }
