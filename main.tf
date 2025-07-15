@@ -1,23 +1,23 @@
 # Variables
 variable "prefix" {
-  default = "Sai"
+  default = "Vykuntasai"
   type    = string
 }
  
 # Resource Group for Networking
 resource "azurerm_resource_group" "network" {
-  name     = "${var.prefix}-rg-dev-network-01"
+  name     = "${var.prefix}-rg-dev-network"
   location = "Central India"
 }
 # Resource Group for Application
 resource "azurerm_resource_group" "application" {
-  name     = "${var.prefix}-rg-dev-application-01"
+  name     = "${var.prefix}-rg-dev-application"
   location = "Central India"
 }
 
 # Virtual Network
 resource "azurerm_virtual_network" "vnet" {
-  name                = "${var.prefix}-vnet-dev-01"
+  name                = "${var.prefix}-vnet-dev"
   address_space       = ["10.1.0.0/20"]
   location            = azurerm_resource_group.network.location
   resource_group_name = azurerm_resource_group.network.name
@@ -25,21 +25,21 @@ resource "azurerm_virtual_network" "vnet" {
  
 # Subnets
 resource "azurerm_subnet" "web" {
-  name                 = "${var.prefix}-snet-dev-web-01"
+  name                 = "${var.prefix}-snet-dev-web"
   resource_group_name  = azurerm_resource_group.network.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.1.0.0/22"]
 }
  
 resource "azurerm_subnet" "app" {
-  name                 = "${var.prefix}-snet-dev-app-01"
+  name                 = "${var.prefix}-snet-dev-app"
   resource_group_name  = azurerm_resource_group.network.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.1.4.0/22"]
 }
  
 resource "azurerm_subnet" "data" {
-  name                 = "${var.prefix}-snet-dev-data-01"
+  name                 = "${var.prefix}-snet-dev-data"
   resource_group_name  = azurerm_resource_group.network.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.1.8.0/22"]
